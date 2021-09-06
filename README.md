@@ -1,6 +1,7 @@
 REST API Booking Test for:
+
 * "partialUpdateBooking
-* "deleteBooking" 
+* "deleteBooking"
 * "getBookingIds"
 
 Using: Kotlin, Maven and jUnit.

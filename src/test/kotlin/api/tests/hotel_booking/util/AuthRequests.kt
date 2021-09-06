@@ -1,7 +1,6 @@
 package api.tests.hotel_booking.util
 
 import api.tests.hotel_booking.mapping.getJsonBody
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.junit.jupiter.api.fail
 import java.io.FileInputStream
