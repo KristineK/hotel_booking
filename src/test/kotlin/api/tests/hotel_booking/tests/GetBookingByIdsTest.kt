@@ -1,6 +1,8 @@
 package api.tests.hotel_booking.tests
 
-import api.tests.hotel_booking.mapping.*
+import api.tests.hotel_booking.mapping.dateParser
+import api.tests.hotel_booking.mapping.getBookingJsonArray
+import api.tests.hotel_booking.mapping.getCreatedBookingJson
 import api.tests.hotel_booking.util.BookingRequests.createDefaultBooking
 import api.tests.hotel_booking.util.BookingRequests.defaultBooking
 import api.tests.hotel_booking.util.BookingRequests.deleteBookingWithCookieHeader
