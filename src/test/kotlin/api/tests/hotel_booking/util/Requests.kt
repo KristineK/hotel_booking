@@ -6,7 +6,6 @@ import io.restassured.config.ObjectMapperConfig.objectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import io.restassured.http.ContentType
 import io.restassured.http.Header
-import io.restassured.http.Headers
 import io.restassured.mapper.ObjectMapperType
 import org.assertj.core.api.Assertions.assertThat
 
@@ -84,18 +83,35 @@ open class Requests {
         return response.body().asString()
     }
 
-    fun putRequest(body: String, headers: Headers, url: String, statusCode: Int): String {
+    fun putRequest(body: String, url: String, statusCode: Int): String {
         val response = given()
             .contentType(ContentType.JSON)
-            .headers(headers)
+            .header("Accept", "application/json")
             .body(body)
             .`when`()
-            .put(url)
+            .patch(url)
             .then()
             .extract()
         assertThat(response.statusCode())
             .`as`("Incorrect status code for PUT call to url $url with body $body" +
-                ", headers $headers and response ${response.body().asString()}.")
+                " and response ${response.body().asString()}.")
+            .isEqualTo(statusCode)
+        return response.body().asString()
+    }
+
+    fun putRequest(body: String, header: Header, url: String, statusCode: Int): String {
+        val response = given()
+            .contentType(ContentType.JSON)
+            .header("Accept", "application/json")
+            .header(header)
+            .body(body)
+            .`when`()
+            .patch(url)
+            .then()
+            .extract()
+        assertThat(response.statusCode())
+            .`as`("Incorrect status code for PUT call to url $url with body $body" +
+                ", header $header and response ${response.body().asString()}.")
             .isEqualTo(statusCode)
         return response.body().asString()
     }

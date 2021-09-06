@@ -12,13 +12,6 @@ import java.util.*
 
 object BookingRequests : Requests() {
     private var url: String
-
-    init {
-        val props = Properties()
-        props.load(FileInputStream("src/test/resources/config.properties"))
-        url = props.getProperty("baseUrl") + props.getProperty("bookingPath")
-    }
-
     var defaultBooking = Booking("Jim",
         "Brown",
         BigDecimal.valueOf(111),
@@ -26,6 +19,32 @@ object BookingRequests : Requests() {
         BookingDates("2018-01-01",
             "2019-01-01"),
         "Breakfast")
+    var authToken: String? = null
+    var authCredentials: String? = null
+
+    init {
+        val props = Properties()
+        props.load(FileInputStream("src/test/resources/config.properties"))
+        url = props.getProperty("baseUrl") + props.getProperty("bookingPath")
+    }
+
+    private fun authCookieHeader(): Header {
+        if (authToken.isNullOrEmpty()) {
+            authToken = getAuthToken()
+        }
+        return Header("Cookie", "token=$authToken")
+    }
+
+    private fun basicAuthHeader(): Header {
+        // TODO change to valid code:
+        // Note: on site it appears to be "base64(username:password), but when I tryed that API returned 403
+        if (authCredentials.isNullOrEmpty()) {
+            authCredentials = Base64.getEncoder().encodeToString(getCredentials().toByteArray())
+        }
+
+        return Header("Authorisation",
+            "Basic $authCredentials")
+    }
 
     fun createDefaultBooking(): String {
         return createBooking(Gson().toJson(defaultBooking).toString())
@@ -33,6 +52,22 @@ object BookingRequests : Requests() {
 
     fun createBooking(body: String): String {
         return postRequest(body, url, 200)
+    }
+
+    fun deleteBookingWithCookieHeader(id: Int, statusCode: Int): String {
+        return deleteRequest(authCookieHeader(), "$url/$id", statusCode)
+    }
+
+    fun deleteBookingWithCookieHeader(id: Int): String {
+        return deleteRequest(authCookieHeader(), "$url/$id", 201)
+    }
+
+    fun deleteBookingWithAuthorisationHeader(id: Int): String {
+        return deleteRequest(basicAuthHeader(), "$url/$id", 201)
+    }
+
+    fun deleteBookingWithoutAuth(id: Int): String {
+        return deleteRequest("$url/$id", 403)
     }
 
     fun getBookingId(id: Int): String {
@@ -51,25 +86,15 @@ object BookingRequests : Requests() {
         return getRequest(query, url, 200)
     }
 
-    fun deleteBookingWithCookieHeader(id: Int, statusCode: Int): String {
-        val header = Header("Cookie", "token=${getAuthToken()}")
-        return deleteRequest(header, "$url/$id", statusCode)
+    fun partialUpdateBookingWithoutHeader(body: String, id: Int): String {
+        return putRequest(body, "$url/$id", 403)
     }
 
-    fun deleteBookingWithCookieHeader(id: Int): String {
-        val header = Header("Cookie", "token=${getAuthToken()}")
-        return deleteRequest(header, "$url/$id", 201)
+    fun partialUpdateBookingWithBasicAuthHeader(body: String, id: Int): String {
+        return putRequest(body, basicAuthHeader(), "$url/$id", 200)
     }
 
-    fun deleteBookingWithAuthorisationHeader(id: Int): String {
-        // todo change to valid code:
-        // Note: on site it appears to be "base64(username:password), but when I tryed that API returned 403
-        val header = Header("Authorisation",
-            "Basic ${Base64.getEncoder().encodeToString(getCredentials().toByteArray())}")
-        return deleteRequest(header, "$url/$id", 201)
-    }
-
-    fun deleteBookingWithoutAuth(id: Int): String {
-        return deleteRequest("$url/$id", 403)
+    fun partialUpdateBookingWithCookieHeader(body: String, id: Int): String {
+        return putRequest(body, authCookieHeader(), "$url/$id", 200)
     }
 }

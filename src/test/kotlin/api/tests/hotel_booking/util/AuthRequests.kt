@@ -32,5 +32,4 @@ object AuthRequests : Requests() {
     fun getAuthToken(): String {
         return getJsonBody(postRequest(loginDetails.toString(), url, 200), JsonObject::class.java).get("token").toString()
     }
-
 }
