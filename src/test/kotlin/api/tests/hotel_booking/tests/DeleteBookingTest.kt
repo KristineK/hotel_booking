@@ -1,7 +1,6 @@
 package api.tests.hotel_booking.tests
 
-import api.tests.hotel_booking.mapping.CreatedBooking
-import api.tests.hotel_booking.mapping.getJsonBody
+import api.tests.hotel_booking.mapping.*
 import api.tests.hotel_booking.util.BookingRequests.createDefaultBooking
 import api.tests.hotel_booking.util.BookingRequests.deleteBookingWithAuthorisationHeader
 import api.tests.hotel_booking.util.BookingRequests.deleteBookingWithCookieHeader
@@ -9,50 +8,54 @@ import api.tests.hotel_booking.util.BookingRequests.deleteBookingWithoutAuth
 import api.tests.hotel_booking.util.BookingRequests.getBookingId
 import api.tests.hotel_booking.util.BookingRequests.getBookingIdNotFound
 import api.tests.hotel_booking.util.BookingRequests.getBookingIds
-import com.google.gson.JsonObject
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class DeleteBookingTests {
+class DeleteBookingTest {
     @Test
     fun `create and then delete booking with request which uses cookie for auth test`() {
-        val newBooking = getJsonBody(createDefaultBooking(), CreatedBooking::class.java)
+        val newBooking = getCreatedBookingJson(createDefaultBooking())
         getBookingId(newBooking.bookingid)
         deleteBookingWithCookieHeader(newBooking.bookingid)
         getBookingIdNotFound(newBooking.bookingid)
-        val allBookings: Array<JsonObject> = getJsonBody(getBookingIds(), Array<JsonObject>::class.java)
-        Assertions.assertThat((allBookings.find { it.get("bookingid").asInt == newBooking.bookingid }))
+        val allBookings = getBookingJsonArray(getBookingIds())
+        Assertions.assertThat((allBookings.find { it.bookingid == newBooking.bookingid }))
             .`as`("Check that new booking ID is added").isNull()
     }
 
     // TODO correct this test fails, need to be fixed with auth
     @Test
+    @Tag("fail")
     fun `create and then delete booking with request which uses basic auth for auth test`() {
-        val newBooking = getJsonBody(createDefaultBooking(), CreatedBooking::class.java)
+        val newBooking = getCreatedBookingJson(createDefaultBooking())
         getBookingId(newBooking.bookingid)
         deleteBookingWithAuthorisationHeader(newBooking.bookingid)
         getBookingIdNotFound(newBooking.bookingid)
-        val allBookings: Array<JsonObject> = getJsonBody(getBookingIds(), Array<JsonObject>::class.java)
-        Assertions.assertThat((allBookings.find { it.get("bookingid").asInt == newBooking.bookingid }))
+        val allBookings = getBookingJsonArray(getBookingIds())
+        assertThat((allBookings.find { it.bookingid == newBooking.bookingid }))
             .`as`("Check that new booking ID is added").isNull()
     }
 
     @Test
     fun `create and then delete booking without authorization token test`() {
-        val newBooking = getJsonBody(createDefaultBooking(), CreatedBooking::class.java)
+        val newBooking = getCreatedBookingJson(createDefaultBooking())
         getBookingId(newBooking.bookingid)
         deleteBookingWithoutAuth(newBooking.bookingid)
-        getBookingIdNotFound(newBooking.bookingid)
-        val allBookings: Array<JsonObject> = getJsonBody(getBookingIds(), Array<JsonObject>::class.java)
-        Assertions.assertThat((allBookings.find { it.get("bookingid").asInt == newBooking.bookingid }))
-            .`as`("Check that new booking ID is added").isNull()
+        getBookingId(newBooking.bookingid)
+        val allBookings = getBookingJsonArray(getBookingIds())
+        assertThat((allBookings.find { it.bookingid == newBooking.bookingid }))
+            .`as`("Check that new booking ID is added").isNotNull
     }
 
+//    TODO change when specification is known
     @Test
+    @Tag("fail")
     fun `delete none existing id test`() {
-        val noneExistingBookingId = 123456789
+        val noneExistingBookingId = 987654321
         getBookingIdNotFound(noneExistingBookingId)
-        // not sure if this request should or should not though an error:
-        deleteBookingWithCookieHeader(noneExistingBookingId)
+        // no specification on this error
+        assertThat(deleteBookingWithCookieHeader(noneExistingBookingId, 405)).isEqualTo("Method Not Allowed")
     }
 }

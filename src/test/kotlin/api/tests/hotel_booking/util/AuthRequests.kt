@@ -1,5 +1,6 @@
 package api.tests.hotel_booking.util
 
+import api.tests.hotel_booking.mapping.getJsonBody
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.junit.jupiter.api.fail
@@ -30,7 +31,7 @@ object AuthRequests : Requests() {
     }
 
     fun getAuthToken(): String {
-        return Gson().fromJson(postRequest(loginDetails.toString(), url, 200), JsonObject::class.java).get("token").toString()
+        return getJsonBody(postRequest(loginDetails.toString(), url, 200), JsonObject::class.java).get("token").toString()
     }
 
 }
