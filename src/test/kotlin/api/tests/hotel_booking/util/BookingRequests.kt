@@ -2,13 +2,15 @@ package api.tests.hotel_booking.util
 
 import api.tests.hotel_booking.mapping.Booking
 import api.tests.hotel_booking.mapping.BookingDates
+import api.tests.hotel_booking.util.AuthRequests.getAuthToken
+import api.tests.hotel_booking.util.AuthRequests.getCredentials
 import com.google.gson.Gson
 import io.restassured.http.Header
 import java.io.FileInputStream
 import java.math.BigDecimal
 import java.util.*
 
-class BookingRequests : Requests() {
+object BookingRequests : Requests() {
     private var url: String
 
     init {
@@ -18,12 +20,12 @@ class BookingRequests : Requests() {
     }
 
     var defaultBooking = Booking("Jim",
-            "Brown",
-            BigDecimal.valueOf(111),
-            true,
-            BookingDates("2018-01-01",
-                    "2019-01-01"),
-            "Breakfast")
+        "Brown",
+        BigDecimal.valueOf(111),
+        true,
+        BookingDates("2018-01-01",
+            "2019-01-01"),
+        "Breakfast")
 
     fun createDefaultBooking(): String {
         return createBooking(Gson().toJson(defaultBooking).toString())
@@ -50,7 +52,7 @@ class BookingRequests : Requests() {
     }
 
     fun deleteBookingWithCookieHeader(id: Int) {
-        val header = Header("Cookie", "token=${AuthRequests().getAuthToken()}")
+        val header = Header("Cookie", "token=${getAuthToken()}")
         deleteRequest(header, "$url/$id", 201)
     }
 
@@ -58,7 +60,7 @@ class BookingRequests : Requests() {
         // todo change to valid code:
         // Note: on site it appears to be "base64(username:password), but when I tryed that API returned 403
         val header = Header("Authorisation",
-                "Basic ${Base64.getEncoder().encodeToString(AuthRequests().getCredentials().toByteArray())}")
+            "Basic ${Base64.getEncoder().encodeToString(getCredentials().toByteArray())}")
         deleteRequest(header, "$url/$id", 201)
     }
 

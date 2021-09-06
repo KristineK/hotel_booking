@@ -7,7 +7,7 @@ import java.io.FileInputStream
 import java.util.*
 
 
-class AuthRequests : Requests() {
+object AuthRequests : Requests() {
     private val url: String
     private val loginDetails: JsonObject
 
@@ -19,7 +19,7 @@ class AuthRequests : Requests() {
         // username and password is being added via command line (e.g. -Dusername=admin option) for security reasons
         // if the username/password are just for test users they can be moved to config.properties
         if (System.getProperty(Vocabulary.username.toString()).isNullOrEmpty() ||
-                System.getProperty(Vocabulary.password.toString()).isNullOrEmpty())
+            System.getProperty(Vocabulary.password.toString()).isNullOrEmpty())
             fail("Username and password properties need to be added.")
         loginDetails.addProperty(Vocabulary.username.toString(), System.getProperty(Vocabulary.username.toString()))
         loginDetails.addProperty(Vocabulary.password.toString(), System.getProperty(Vocabulary.password.toString()))
