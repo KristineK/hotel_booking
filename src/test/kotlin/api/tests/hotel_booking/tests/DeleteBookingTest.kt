@@ -16,11 +16,11 @@ import org.junit.jupiter.api.Test
 class DeleteBookingTest {
     @Test
     fun `create and then delete booking with request which uses cookie for auth test`() {
-        val newBooking = getBookingWithIdJson(createDefaultBooking())
+        val newBooking = createDefaultBooking()
         getBookingId(newBooking.bookingid)
         deleteBookingWithCookieHeader(newBooking.bookingid)
         getBookingIdNotFound(newBooking.bookingid)
-        val allBookings = getBookingJsonArray(getBookingIds())
+        val allBookings = getBookingIds()
         assertThat((allBookings.find { it.bookingid == newBooking.bookingid }))
             .`as`("Check that new booking ID is added").isNull()
     }
@@ -29,22 +29,22 @@ class DeleteBookingTest {
     @Test
     @Tag("fail")
     fun `create and then delete booking with request which uses basic auth for auth test`() {
-        val newBooking = getBookingWithIdJson(createDefaultBooking())
+        val newBooking = createDefaultBooking()
         getBookingId(newBooking.bookingid)
         deleteBookingWithAuthorisationHeader(newBooking.bookingid)
         getBookingIdNotFound(newBooking.bookingid)
-        val allBookings = getBookingJsonArray(getBookingIds())
+        val allBookings = getBookingIds()
         assertThat((allBookings.find { it.bookingid == newBooking.bookingid }))
             .`as`("Check that new booking ID is added").isNull()
     }
 
     @Test
     fun `create and then delete booking without authorization token test`() {
-        val newBooking = getBookingWithIdJson(createDefaultBooking())
+        val newBooking = createDefaultBooking()
         getBookingId(newBooking.bookingid)
         deleteBookingWithoutAuth(newBooking.bookingid)
         getBookingId(newBooking.bookingid)
-        val allBookings = getBookingJsonArray(getBookingIds())
+        val allBookings = getBookingIds()
         assertThat((allBookings.find { it.bookingid == newBooking.bookingid }))
             .`as`("Check that new booking ID is added").isNotNull
     }

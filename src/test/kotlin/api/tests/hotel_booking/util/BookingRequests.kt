@@ -1,9 +1,9 @@
 package api.tests.hotel_booking.util
 
-import api.tests.hotel_booking.mapping.Booking
-import api.tests.hotel_booking.mapping.BookingDates
+import api.tests.hotel_booking.mapping.*
 import api.tests.hotel_booking.util.AuthRequests.getAuthToken
 import api.tests.hotel_booking.util.AuthRequests.getCredentials
+import api.tests.hotel_booking.util.BookingRequests.getRequest
 import com.google.gson.Gson
 import io.restassured.http.Header
 import java.io.FileInputStream
@@ -46,8 +46,8 @@ object BookingRequests : Requests() {
             "Basic $authCredentials")
     }
 
-    fun createDefaultBooking(): String {
-        return createBooking(Gson().toJson(defaultBooking).toString())
+    fun createDefaultBooking(): BookingWithId {
+        return getBookingWithIdJson(createBooking(Gson().toJson(defaultBooking).toString()))
     }
 
     fun createBooking(body: String): String {
@@ -70,31 +70,31 @@ object BookingRequests : Requests() {
         return deleteRequest("$url/$id", 403)
     }
 
-    fun getBookingId(id: Int): String {
-        return getRequest("$url/$id", 200)
+    fun getBookingId(id: Int): Booking {
+        return getBookingJson(getRequest("$url/$id", 200))
     }
 
     fun getBookingIdNotFound(id: Int): String {
         return getRequest("$url/$id", 404)
     }
 
-    fun getBookingIds(): String {
-        return getRequest(url, 200)
+    fun getBookingIds(): Array<Bookings> {
+        return getBookingJsonArray(getRequest(url, 200))
     }
 
-    fun getBookingIds(query: Map<String, String>): String {
-        return getRequest(query, url, 200)
+    fun getBookingIds(query: Map<String, String>): Array<Bookings>  {
+        return getBookingJsonArray(getRequest(query, url, 200))
     }
 
     fun partialUpdateBookingWithoutHeader(body: String, id: Int): String {
         return putRequest(body, "$url/$id", 403)
     }
 
-    fun partialUpdateBookingWithBasicAuthHeader(body: String, id: Int): String {
-        return putRequest(body, basicAuthHeader(), "$url/$id", 200)
+    fun partialUpdateBookingWithBasicAuthHeader(body: String, id: Int): Booking {
+        return getBookingJson(putRequest(body, basicAuthHeader(), "$url/$id", 200))
     }
 
-    fun partialUpdateBookingWithCookieHeader(body: String, id: Int): String {
-        return putRequest(body, authCookieHeader(), "$url/$id", 200)
+    fun partialUpdateBookingWithCookieHeader(body: String, id: Int): Booking {
+        return getBookingJson(putRequest(body, authCookieHeader(), "$url/$id", 200))
     }
 }

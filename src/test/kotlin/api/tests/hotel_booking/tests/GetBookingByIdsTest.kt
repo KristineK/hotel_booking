@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Test
 class GetBookingByIdsTest {
     @Test
     fun `get all bookings by ids after one more is added test`() {
-        val allBookings = getBookingJsonArray(getBookingIds())
-        val newBooking = getBookingWithIdJson(createDefaultBooking())
-        val allBookingsNew = getBookingJsonArray(getBookingIds())
+        val allBookings = getBookingIds()
+        val newBooking = createDefaultBooking()
+        val allBookingsNew = getBookingIds()
         assertThat(allBookingsNew.size).isEqualTo(allBookings.size + 1)
         assertThat((allBookingsNew.find { it.bookingid == newBooking.bookingid }))
             .`as`("Check that new booking ID is added").isNotNull
@@ -25,10 +25,10 @@ class GetBookingByIdsTest {
 
     @Test
     fun `get all bookings by ids after a new one is removed test`() {
-        val allBookings = getBookingJsonArray(getBookingIds())
-        val newBooking = getBookingWithIdJson(createDefaultBooking())
+        val allBookings = getBookingIds()
+        val newBooking = createDefaultBooking()
         deleteBookingWithCookieHeader(newBooking.bookingid)
-        val allBookingsNew = getBookingJsonArray(getBookingIds())
+        val allBookingsNew = getBookingIds()
         assertThat(allBookingsNew.size).isEqualTo(allBookings.size)
         assertThat((allBookingsNew.find { it.bookingid == newBooking.bookingid }))
             .`as`("Check that new booking ID is added").isNull()
@@ -38,9 +38,9 @@ class GetBookingByIdsTest {
     fun `get bookings by ids with firstname and lastname test`() {
         val defaultBooking = defaultBooking
         val query = mapOf("firstname" to defaultBooking.firstname.toString(), "lastname" to defaultBooking.lastname.toString())
-        val allBookings = getBookingJsonArray(getBookingIds(query))
-        val newBooking = getBookingWithIdJson(createDefaultBooking())
-        val allBookingsNew = getBookingJsonArray(getBookingIds(query))
+        val allBookings = getBookingIds(query)
+        val newBooking = createDefaultBooking()
+        val allBookingsNew = getBookingIds(query)
         assertThat(allBookingsNew.size).isEqualTo(allBookings.size + 1)
         assertThat((allBookingsNew.find { it.bookingid == newBooking.bookingid }))
             .`as`("Check that new booking ID is added").isNotNull
@@ -72,21 +72,21 @@ class GetBookingByIdsTest {
         val queryExtraDay = mapOf("checkin" to dateParser(defaultBookingDates.checkin!!).minusDays(1).toString(),
             "checkout" to dateParser(defaultBookingDates.checkout!!).plusDays(1).toString())
 
-        val bookingsExactDate = getBookingJsonArray(getBookingIds(queryExactDate))
-        val bookingsCheckInMinusOneDay = getBookingJsonArray(getBookingIds(queryCheckInMinusOneDay))
-        val bookingsCheckInPlusOneDay = getBookingJsonArray(getBookingIds(queryCheckInPlusOneDay))
-        val bookingsCheckOutMinusOneDay = getBookingJsonArray(getBookingIds(queryCheckOutMinusOneDay))
-        val bookingsCheckOutPlusOneDay = getBookingJsonArray(getBookingIds(queryCheckOutPlusOneDay))
-        val bookingsExtraDay = getBookingJsonArray(getBookingIds(queryExtraDay))
+        val bookingsExactDate = getBookingIds(queryExactDate)
+        val bookingsCheckInMinusOneDay = getBookingIds(queryCheckInMinusOneDay)
+        val bookingsCheckInPlusOneDay = getBookingIds(queryCheckInPlusOneDay)
+        val bookingsCheckOutMinusOneDay = getBookingIds(queryCheckOutMinusOneDay)
+        val bookingsCheckOutPlusOneDay = getBookingIds(queryCheckOutPlusOneDay)
+        val bookingsExtraDay = getBookingIds(queryExtraDay)
 
-        val newBooking = getBookingWithIdJson(createDefaultBooking())
+        val newBooking = createDefaultBooking()
 
-        val bookingsExactNew = getBookingJsonArray(getBookingIds(queryExactDate))
-        val bookingsCheckInMinusOneDayNew = getBookingJsonArray(getBookingIds(queryCheckInMinusOneDay))
-        val bookingsCheckInPlusOneDayNew = getBookingJsonArray(getBookingIds(queryCheckInPlusOneDay))
-        val bookingsCheckOutMinusOneDayNew = getBookingJsonArray(getBookingIds(queryCheckOutMinusOneDay))
-        val bookingsCheckOutPlusOneDayNew = getBookingJsonArray(getBookingIds(queryCheckOutPlusOneDay))
-        val bookingsExtraDayNew = getBookingJsonArray(getBookingIds(queryExtraDay))
+        val bookingsExactNew = getBookingIds(queryExactDate)
+        val bookingsCheckInMinusOneDayNew = getBookingIds(queryCheckInMinusOneDay)
+        val bookingsCheckInPlusOneDayNew = getBookingIds(queryCheckInPlusOneDay)
+        val bookingsCheckOutMinusOneDayNew = getBookingIds(queryCheckOutMinusOneDay)
+        val bookingsCheckOutPlusOneDayNew = getBookingIds(queryCheckOutPlusOneDay)
+        val bookingsExtraDayNew = getBookingIds(queryExtraDay)
 
         val softly = SoftAssertions()
         softly.assertThat(bookingsExactNew.size)
